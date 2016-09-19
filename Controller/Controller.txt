@@ -1,0 +1,16 @@
+The Serial Communication for the controller is done by sending 6 integers
+representing the duty cycles of the 6 servos for each joint in the robotic arm.
+Each of the integers should space separated (i.e. "89 100 5 22 99 100"), and the
+new duty cycles will be assigned when it detects a carriage return '\r' (enter).
+
+--- Startup info & initial servo duty cycles ---
+Finished Initialization
+Running...
+1:50% 2:50% 3:50% 4:50% 5:50% 6:50%
+
+--- Sample Communication ---
+Finished Initialization
+Running...
+1:50% 2:50% 3:50% 4:50% 5:50% 6:50%
+67 1 100 101 89 79
+1:67% 2:1% 3:100% 4:100% 5:50% 6:50%

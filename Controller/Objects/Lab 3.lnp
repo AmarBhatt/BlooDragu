@@ -1,0 +1,10 @@
+--cpu Cortex-M4.fp
+".\objects\main.o"
+".\objects\uart.o"
+".\objects\pwm.o"
+".\objects\startup_mk64f12.o"
+".\objects\system_mk64f12.o"
+--strict --scatter ".\Objects\Lab 3.sct"
+--summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list ".\Listings\Lab 3.map" -o ".\Objects\Lab 3.axf"

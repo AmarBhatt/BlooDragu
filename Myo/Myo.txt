@@ -1,6 +1,0 @@
-The Myo connection is a 2015 Visual Studio C# project. This is based on MyoSharp, a
-third party extension for Myo. To use MyoSharp, you must first install Code Contacts for
-Visual Studio: https://visualstudiogallery.msdn.microsoft.com/1ec7db13-3363-46c9-851f-1ce455f66970
-
-Currently, the main code is HapticFeedback.cs under the MyoSharp.SeniorDesign project.
-

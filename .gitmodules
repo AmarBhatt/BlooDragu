@@ -1,0 +1,3 @@
+[submodule "MyoSharp"]
+	path = MyoSharp
+	url = https://github.com/tayfuzun/MyoSharp.git

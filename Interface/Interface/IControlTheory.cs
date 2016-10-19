@@ -46,7 +46,7 @@ namespace Interface
             CurrentState = new ArmState();
         }
 
-        public const float REST_WINDOW = 0.15f;
+        public const float REST_WINDOW = 0.10f;
         public const float STEP_SIZE = 0.5f;
 
         public override void Attach(MyoControl MyoControl, ArmControl ArmControl)
@@ -56,6 +56,8 @@ namespace Interface
             m_running = true;
             m_task = Task.Run(async () =>
             {
+                int current_joint = 0;
+                bool just_changed = false;
                 while(!MyoControl.IsConnected)
                         Console.WriteLine("Armband Not connected");
                 Console.WriteLine("Hold vertically!!!");
@@ -70,14 +72,29 @@ namespace Interface
 
                         if (MyoControl.Accelerometer != null && MyoControl.Gesture != null)
                         {
+                            if (MyoControl.Gesture == 3 && just_changed == false)
+                            {
+                                just_changed = true;
+                                current_joint--;
+                                if (current_joint < 0)
+                                    current_joint = 5;
+                            }
+                            else if (MyoControl.Gesture == 2 && just_changed == false)
+                            {
+                                just_changed = true;
+                                current_joint++;
+                                current_joint = current_joint % 6;
+                            }
+                            else if (MyoControl.Gesture == 0)
+                                just_changed = false;
                             if (MyoControl.Accelerometer[2] < midpoint - REST_WINDOW)
-                                CurrentState.Update(MyoControl.Gesture.Value, -STEP_SIZE);
+                                CurrentState.Update(current_joint, -STEP_SIZE);
                             else if (MyoControl.Accelerometer[2] > midpoint + REST_WINDOW)
-                                CurrentState.Update(MyoControl.Gesture.Value, STEP_SIZE);
+                                CurrentState.Update(current_joint, STEP_SIZE);
                         }
 
                         ArmControl.SendPosition(CurrentState);
-                        Console.WriteLine("Arm position (Pose: {0}:", MyoControl.Gesture);
+                        Console.WriteLine("Arm position (Pose: {0}, joint: {1})", MyoControl.Gesture, current_joint);
                         Console.WriteLine(string.Join(" ", CurrentState.Angles));
                     }
                     else

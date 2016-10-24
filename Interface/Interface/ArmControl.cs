@@ -21,11 +21,32 @@ namespace Interface
 
         public const float MAX_DUTY = 12;
         public const float MIN_DUTY = 5;
+        public const float CLAW_OPEN = 5;
+        public const float CLAW_CLOSED = 12;
+        public const int CLAW = 0;
 
         public void Update(int idx, float step)
         {
             Angles[idx] += step;
             Angles[idx] = Math.Max(Math.Min(Angles[idx], MAX_DUTY), MIN_DUTY);
+        }
+
+        public void SetAngle(int idx, float duty)
+        {
+            Angles[idx] = Math.Max(Math.Min(duty, MAX_DUTY), MIN_DUTY);
+        }
+
+        public void ToggleClaw(bool open)
+        {
+            if (open)
+            {
+                Angles[CLAW] = CLAW_OPEN;
+            }
+            else
+            {
+                Angles[CLAW] = CLAW_CLOSED;
+            }
+            
         }
     }
     public class ArmControl

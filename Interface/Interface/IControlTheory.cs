@@ -58,6 +58,7 @@ namespace Interface
             {
                 int current_joint = 0;
                 bool just_changed = false;
+                bool claw_open = false;
                 while(!MyoControl.IsConnected)
                         Console.WriteLine("Armband Not connected");
                 Console.WriteLine("Hold vertically!!!");
@@ -76,14 +77,22 @@ namespace Interface
                             {
                                 just_changed = true;
                                 current_joint--;
-                                if (current_joint < 0)
+                                if (current_joint < 1)
                                     current_joint = 5;
                             }
                             else if (MyoControl.Gesture == 2 && just_changed == false)
                             {
                                 just_changed = true;
                                 current_joint++;
-                                current_joint = current_joint % 6;
+                                current_joint = current_joint % 5 + 1;
+                            }
+                            else if (MyoControl.Gesture == 4 && just_changed == false)
+                            {
+                                //current_joint = 0;
+                                just_changed = true;
+                                CurrentState.ToggleClaw(!claw_open);
+                                claw_open = !claw_open;
+                                Console.WriteLine("Claw = {0}", claw_open);
                             }
                             else if (MyoControl.Gesture == 0)
                                 just_changed = false;

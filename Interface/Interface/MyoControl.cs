@@ -102,6 +102,7 @@ namespace Interface
                         case Pose.WaveOut:
                             return 5; // Base
                         case Pose.DoubleTap:
+                            return 4;
                         case Pose.Rest:
                         case Pose.Unknown:
                         default:

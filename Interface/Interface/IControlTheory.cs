@@ -86,20 +86,21 @@ namespace Interface
                                 current_joint++;
                                 current_joint = current_joint % 5 + 1;
                             }
-                            else if (MyoControl.Gesture == 4 && just_changed == false)
+                            else if (MyoControl.getDoubleTap)
                             {
                                 //current_joint = 0;
                                 just_changed = true;
                                 CurrentState.ToggleClaw(!claw_open);
                                 claw_open = !claw_open;
+                                MyoControl.resetDoubleTap();
                                 Console.WriteLine("Claw = {0}", claw_open);
                             }
                             else if (MyoControl.Gesture == 0)
                                 just_changed = false;
-                            if (MyoControl.Accelerometer[2] < midpoint - REST_WINDOW)
-                                CurrentState.Update(current_joint, -STEP_SIZE);
-                            else if (MyoControl.Accelerometer[2] > midpoint + REST_WINDOW)
-                                CurrentState.Update(current_joint, STEP_SIZE);
+                            //if (MyoControl.Accelerometer[2] < midpoint - REST_WINDOW)
+                            //    CurrentState.Update(current_joint, -STEP_SIZE);
+                            //else if (MyoControl.Accelerometer[2] > midpoint + REST_WINDOW)
+                            //    CurrentState.Update(current_joint, STEP_SIZE);
                         }
 
                         ArmControl.SendPosition(CurrentState);

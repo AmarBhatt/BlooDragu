@@ -17,6 +17,7 @@ namespace Interface
         IChannel m_channel;
         IHub m_hub;
         IMyo m_myo;
+        bool double_tap = false;
 
         protected MyoControl()
         {
@@ -45,7 +46,15 @@ namespace Interface
 
         private static void M_myo_PoseChanged(object sender, PoseEventArgs e)
         {
+            if(e.Pose == Pose.DoubleTap)
+            {
+                m_instance.double_tap = true;
+            }
+            
         }
+
+        public bool getDoubleTap { get { return m_instance.double_tap; } }
+        public void resetDoubleTap() {  m_instance.double_tap=false;  }
 
         public bool IsConnected { get { return m_myo != null; } }
 

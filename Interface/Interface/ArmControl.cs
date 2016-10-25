@@ -1,6 +1,7 @@
 ﻿using MyoSharp.Math;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Linq;
@@ -9,17 +10,62 @@ using System.Threading.Tasks;
 
 namespace Interface
 {
-    public class ArmState
+    public class ArmState : INotifyPropertyChanged
     {
         public float[] Angles = new float[6];
+        private bool claw = false;
 
-        public ArmState()
+        protected ArmState() { }
+        static ArmState a_instance;
+
+        public static ArmState GetInstance()
         {
-            for (var i = 0; i < Angles.Length; ++i)
-                Angles[i] = 7;
+            if (a_instance == null)
+            {
+                a_instance = new ArmState();
+                for (var i = 0; i < a_instance.Angles.Length; ++i)
+                    a_instance.Angles[i] = 7;
 
-            Angles[CLAW_IDX] = CLAW_CLOSED;
+                a_instance.Angles[CLAW_IDX] = CLAW_CLOSED;
+                a_instance.claw = true;
+            }
+            return a_instance;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public bool ClawState
+        {
+            get { return claw; }
+            set
+            {
+                claw = value;
+                // Call OnPropertyChanged whenever the property is updated
+                Console.WriteLine("Test0");
+                OnPropertyChanged("ClawState");
+            }
+        }
+
+        protected void OnPropertyChanged(string name)
+        {
+            Console.WriteLine("Test1");
+            PropertyChangedEventHandler handler = PropertyChanged;
+
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+                Console.WriteLine("Test2");
+            }
+        }
+
+
+        //public ArmState()
+        //{
+        //    for (var i = 0; i < Angles.Length; ++i)
+        //        Angles[i] = 7;
+
+        //    Angles[CLAW_IDX] = CLAW_CLOSED;
+        //}
 
         public float[] MAX_DUTY = { 11.0f, 12.0f , 12.0f , 12.0f , 8.0f , 12.0f};
 
@@ -31,10 +77,19 @@ namespace Interface
         public void ToggleClaw()
         {
             if (Angles[CLAW_IDX] > CLAW_CLOSED)
+            {
                 Angles[CLAW_IDX] = CLAW_CLOSED;
+                a_instance.ClawState = false;
+            }
             else
+            {
                 Angles[CLAW_IDX] = CLAW_OPEN;
-        }
+                a_instance.ClawState = true;
+            }
+
+         }
+
+        
 
         public void Update(int idx, float step)
         {

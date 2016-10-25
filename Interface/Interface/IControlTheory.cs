@@ -15,7 +15,7 @@ namespace Interface
 
         public IControlTheory()
         {
-            CurrentState = new ArmState();
+            CurrentState = ArmState.GetInstance();
         }
 
         static IControlTheory m_attached;

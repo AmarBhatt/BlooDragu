@@ -23,7 +23,7 @@ namespace Interface
         public MainWindow()
         {
             InitializeComponent();
-
+            this.DataContext = ArmState.GetInstance();
             try
             {
                 m_arm = ArmControl.GetInstance();

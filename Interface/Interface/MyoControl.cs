@@ -12,16 +12,66 @@ using System.Threading.Tasks;
 
 namespace Interface
 {
+    public class Matrix3F
+    {
+        public float[] values = new float[9];
+
+        public Matrix3F()
+        {
+
+            for (uint i = 0; i < 3; ++i)
+            {
+                for (uint j = 0; j < 3; ++j)
+                {
+                    if (i == j)
+                        values[i * 3 + j] = 1;
+                    else
+                        values[i * 3 + j] = 0;
+                }
+            }
+        }
+
+        public static Vector3F operator*(Matrix3F mat, Vector3F vec)
+        {
+            float[] result = new float[3];
+
+            for(uint i =0;i<3;++i)
+            {
+                result[i] = 0;
+                for(uint j =0;j<3;++j)
+                {
+                    result[i] += mat.values[i * 3 + j] * vec[j];
+                }
+            }
+            return new Vector3F(result[0],result[1], result[2]);
+        }
+
+        public static Matrix3F Create(Vector3F vec)
+        {
+            var unit_vec = vec / vec.Magnitude();
+
+            var mat = new Matrix3F();
+            mat.values[0] = unit_vec[0];
+            mat.values[1] = unit_vec[1];
+            mat.values[2] = unit_vec[2];
+
+            var cosy = Math.Atan(unit_vec[1] / unit_vec[0]);
+
+
+            mat.values[3] = unit_vec[0];
+
+            return mat;
+        }
+    }
     public class MyoControl : IDisposable
     {
         IChannel m_channel;
         IHub m_hub;
         IMyo m_myo;
-        bool double_tap = false;
+
 
         protected MyoControl()
         {
-
         }
 
         static MyoControl m_instance;
@@ -44,17 +94,14 @@ namespace Interface
             return m_instance;
         }
 
-        private static void M_myo_PoseChanged(object sender, PoseEventArgs e)
+        public event EventHandler OnPoseChanged;
+        private void M_myo_PoseChanged(object sender, PoseEventArgs e)
         {
-            if(e.Pose == Pose.DoubleTap)
+            if (OnPoseChanged != null)
             {
-                m_instance.double_tap = true;
+                OnPoseChanged(this, null);
             }
-            
         }
-
-        public bool getDoubleTap { get { return m_instance.double_tap; } }
-        public void resetDoubleTap() {  m_instance.double_tap=false;  }
 
         public bool IsConnected { get { return m_myo != null; } }
 
@@ -127,7 +174,7 @@ namespace Interface
             if (m_instance.m_myo == null)
             {
                 m_instance.m_myo = e.Myo;
-                m_instance.m_myo.PoseChanged += M_myo_PoseChanged;
+                m_instance.m_myo.PoseChanged += m_instance.M_myo_PoseChanged;
                 m_instance.m_myo.Unlock(UnlockType.Hold);
                 m_instance.m_myo.Disconnected += (s, e2) =>
                 {

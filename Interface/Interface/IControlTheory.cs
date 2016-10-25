@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyoSharp.Math;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,14 @@ namespace Interface
 {
     public abstract class IControlTheory
     {
-        MyoControl m_myo;
-        ArmControl m_arm;
+        protected MyoControl m_myo;
+        protected ArmControl m_arm;
+        protected ArmState CurrentState;
+
+        public IControlTheory()
+        {
+            CurrentState = new ArmState();
+        }
 
         static IControlTheory m_attached;
 
@@ -22,20 +29,77 @@ namespace Interface
             m_myo = MyoControl;
             m_arm = ArmControl;
             m_attached = this;
+            m_myo.OnPoseChanged += OnPoseChanged;
+        }
+
+
+        virtual protected void OnPoseChanged(object sender, EventArgs e)
+        {
         }
 
         public virtual void Detach()
         {
+            m_myo.OnPoseChanged -= OnPoseChanged;
             m_myo = null;
             m_arm = null;
             m_attached = null;
         }
     }
 
+    public abstract class PoolingControlTheory : IControlTheory
+    {
+        TimeSpan m_update_interval;
+        TimeSpan m_loop_interval;
+        bool m_running;
+        Task m_arm_task;
+        Task m_compute_task;
+        public override void Attach(MyoControl MyoControl, ArmControl ArmControl)
+        {
+            base.Attach(MyoControl, ArmControl);
+            m_running = true;
+            m_update_interval = TimeSpan.FromMilliseconds(100);
+            Setup();
+            m_arm_task = Task.Run(async () =>
+            {
+                while (m_running)
+                {
+                    SendUpdate();
+                    await Task.Delay(m_update_interval);
+                }
+            });
+            m_compute_task = Task.Run(() =>
+            {
+                var time = DateTime.UtcNow;
+                while (m_running)
+                {
+                    var span = DateTime.UtcNow.Subtract(time);
+                    time = DateTime.UtcNow;
+                    Loop(span);
+                }
+            });
+        }
+
+        virtual protected void Setup() { }
+        abstract protected void Loop(TimeSpan span);
+
+        virtual protected void SendUpdate()
+        {
+            m_arm.SendPosition(CurrentState);
+            Console.WriteLine(string.Join(" ", CurrentState.Angles));
+        }
+
+        public override void Detach()
+        {
+            m_running = false;
+            m_arm_task.Wait();
+            m_compute_task.Wait();
+            base.Detach();
+        }
+    }
+
     public class StartStopControl : IControlTheory
     {
         public TimeSpan Tick { get; set; }
-        public ArmState CurrentState { get; private set; }
         bool m_running;
 
         Task m_task;
@@ -43,7 +107,6 @@ namespace Interface
         public StartStopControl()
         {
             Tick = TimeSpan.FromMilliseconds(100);
-            CurrentState = new ArmState();
         }
 
         public const float REST_WINDOW = 0.10f;
@@ -58,9 +121,8 @@ namespace Interface
             {
                 int current_joint = 0;
                 bool just_changed = false;
-                bool claw_open = false;
-                while(!MyoControl.IsConnected)
-                        Console.WriteLine("Armband Not connected");
+                while (!MyoControl.IsConnected)
+                    Console.WriteLine("Armband Not connected");
                 Console.WriteLine("Hold vertically!!!");
                 await Task.Delay(5000);
                 var midpoint = MyoControl.Accelerometer[2];
@@ -77,30 +139,21 @@ namespace Interface
                             {
                                 just_changed = true;
                                 current_joint--;
-                                if (current_joint < 1)
+                                if (current_joint < 0)
                                     current_joint = 5;
                             }
                             else if (MyoControl.Gesture == 2 && just_changed == false)
                             {
                                 just_changed = true;
                                 current_joint++;
-                                current_joint = current_joint % 5 + 1;
-                            }
-                            else if (MyoControl.getDoubleTap)
-                            {
-                                //current_joint = 0;
-                                just_changed = true;
-                                CurrentState.ToggleClaw(!claw_open);
-                                claw_open = !claw_open;
-                                MyoControl.resetDoubleTap();
-                                Console.WriteLine("Claw = {0}", claw_open);
+                                current_joint = current_joint % 6;
                             }
                             else if (MyoControl.Gesture == 0)
                                 just_changed = false;
-                            //if (MyoControl.Accelerometer[2] < midpoint - REST_WINDOW)
-                            //    CurrentState.Update(current_joint, -STEP_SIZE);
-                            //else if (MyoControl.Accelerometer[2] > midpoint + REST_WINDOW)
-                            //    CurrentState.Update(current_joint, STEP_SIZE);
+                            if (MyoControl.Accelerometer[2] < midpoint - REST_WINDOW)
+                                CurrentState.Update(current_joint, -STEP_SIZE);
+                            else if (MyoControl.Accelerometer[2] > midpoint + REST_WINDOW)
+                                CurrentState.Update(current_joint, STEP_SIZE);
                         }
 
                         ArmControl.SendPosition(CurrentState);
@@ -121,6 +174,68 @@ namespace Interface
             m_running = false;
             m_task.Wait();
             base.Detach();
+        }
+    }
+
+
+    public class BetterControl : PoolingControlTheory
+    {
+        public BetterControl()
+        {
+        }
+
+        protected bool is_updating = false;
+        public TimeSpan claw_interval = TimeSpan.FromSeconds(1);
+        protected DateTime last_claw = DateTime.UtcNow;
+        protected override void OnPoseChanged(object sender, EventArgs e)
+        {
+            base.OnPoseChanged(sender, e);
+
+            if ((m_myo.Gesture == 4 || m_myo.Gesture == 2) && DateTime.UtcNow.Subtract(last_claw) > claw_interval)
+            {
+                if (m_myo.Gesture == 4)
+                {
+                    CurrentState.ToggleClaw();
+                    Console.WriteLine("Claw toggled");
+                }
+                else
+                {
+                    is_updating = !is_updating;
+                }
+                last_claw = DateTime.UtcNow;
+            }
+        }
+        protected override void Setup()
+        {
+            base.Setup();
+
+            while (m_myo.IsConnected == false)
+                Task.Delay(100).Wait();
+
+            rest_acc = m_myo.Accelerometer;
+        }
+        protected Vector3F rest_acc;
+        public Vector3F velocity = new Vector3F(0.0f, 0.0f, 0.0f);
+        protected override void Loop(TimeSpan span)
+        {
+            if (m_myo.IsConnected)
+            {
+                if (m_myo.Accelerometer != null && m_myo.Gesture != null)
+                {
+                    if (is_updating)
+                    {
+                        velocity = velocity + (m_myo.Gyroscope) * (float)span.TotalSeconds * 0.01f;
+
+                        var max = 0.00001f;
+                        var step_size = Math.Min(max, Math.Max(-max, (float)velocity.Z * 0.0001f));
+                        CurrentState.Update(3, step_size);
+                    }
+                    else
+                        velocity = new Vector3F(0, 0, 0);
+                    //Console.WriteLine("X:{0} Y:{1} Z:{2}", velocity.X, velocity.Y, velocity.Z);
+                    //CurrentState.Update(4, -0.3f* step_size);
+                }
+            }
         }
     }
 }

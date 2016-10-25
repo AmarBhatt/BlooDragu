@@ -17,36 +17,33 @@ namespace Interface
         {
             for (var i = 0; i < Angles.Length; ++i)
                 Angles[i] = 7;
+
+            Angles[CLAW_IDX] = CLAW_CLOSED;
         }
 
-        public const float MAX_DUTY = 12;
+        public float[] MAX_DUTY = { 11.0f, 12.0f , 12.0f , 12.0f , 8.0f , 12.0f};
+
         public const float MIN_DUTY = 5;
-        public const float CLAW_OPEN = 5;
-        public const float CLAW_CLOSED = 12;
-        public const int CLAW = 0;
+
+        public const int CLAW_IDX = 0;
+        public const float CLAW_CLOSED = 8.2f;
+        public const float CLAW_OPEN = 11.0f;
+        public void ToggleClaw()
+        {
+            if (Angles[CLAW_IDX] > CLAW_CLOSED)
+                Angles[CLAW_IDX] = CLAW_CLOSED;
+            else
+                Angles[CLAW_IDX] = CLAW_OPEN;
+        }
 
         public void Update(int idx, float step)
         {
             Angles[idx] += step;
-            Angles[idx] = Math.Max(Math.Min(Angles[idx], MAX_DUTY), MIN_DUTY);
+            Angles[idx] = Math.Max(Math.Min(Angles[idx], MAX_DUTY[idx]), MIN_DUTY);
         }
-
-        public void SetAngle(int idx, float duty)
+        public void Set(int idx, float angle)
         {
-            Angles[idx] = Math.Max(Math.Min(duty, MAX_DUTY), MIN_DUTY);
-        }
-
-        public void ToggleClaw(bool open)
-        {
-            if (open)
-            {
-                Angles[CLAW] = CLAW_OPEN;
-            }
-            else
-            {
-                Angles[CLAW] = CLAW_CLOSED;
-            }
-            
+            Angles[idx] = Math.Max(Math.Min(angle, MAX_DUTY[idx]), MIN_DUTY);
         }
     }
     public class ArmControl
@@ -91,10 +88,6 @@ namespace Interface
             {
                 lock (m_serial)
                     m_serial.WriteLine(str);
-            }
-            else
-            {
-                Console.WriteLine("Disconnect: {0}", str);
             }
         }
 

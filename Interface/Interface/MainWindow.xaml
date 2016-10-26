@@ -4,42 +4,42 @@
         Title="MainWindow" Height="350" Width="525">
     <Grid>
         <TextBlock x:Name="textBlock" HorizontalAlignment="Left" TextWrapping="Wrap" Text="BlooDragu" VerticalAlignment="Top" Height="66" Width="188" FontSize="36" FontWeight="Bold"/>
-        <GroupBox x:Name="groupBox" Header="GroupBox" HorizontalAlignment="Left" Height="240" Margin="10,52,0,0" VerticalAlignment="Top" Width="290">
-            <Label x:Name="label5" Content="Base" Margin="32,171,208,22.667" RenderTransformOrigin="-0.231,-0.613"/>
+        <GroupBox x:Name="groupBox" Header="Joint Control" HorizontalAlignment="Left" Height="240" Margin="10,52,0,0" VerticalAlignment="Top" Width="290">
+            <CheckBox x:Name="checkBox_Copy" Content="Open" HorizontalAlignment="Left" Margin="90,39,0,0" VerticalAlignment="Top" IsChecked="{Binding s_arm.ClawState, Mode=TwoWay}"/>
         </GroupBox>
-        <TextBox x:Name="textBox_Copy" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,130,0,0" />
-        <TextBox x:Name="textBox_Copy7" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,158,0,0"/>
-        <TextBox x:Name="textBox_Copy8" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,186,0,0"/>
-        <TextBox x:Name="textBox_Copy9" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,214,0,0"/>
-        <TextBox x:Name="textBox_Copy10" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,242,0,0"/>
-        <TextBox x:Name="textBox_Copy11" Text="{Binding Path=ClawState, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,102,0,0"/>
+        <TextBox x:Name="textBox_Copy" Text="{Binding Path=s_arm[1], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,130,0,0" />
+        <TextBox x:Name="textBox_Copy7" Text="{Binding Path=s_arm[2], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,158,0,0"/>
+        <TextBox x:Name="textBox_Copy8" Text="{Binding Path=s_arm[3], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,186,0,0"/>
+        <TextBox x:Name="textBox_Copy9" Text="{Binding Path=s_arm[4], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,214,0,0"/>
+        <TextBox x:Name="textBox_Copy10" Text="{Binding Path=s_arm[5], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,242,0,0"/>
         <Label x:Name="label" Content="Wrist 1" HorizontalAlignment="Left" Margin="31,130,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.004,0.498"/>
         <Label x:Name="label1" Content="Wrist 2" HorizontalAlignment="Left" Margin="31,161,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.167,0.432"/>
         <Label x:Name="label2" Content="Elbow" HorizontalAlignment="Left" Margin="41,191,0,0" VerticalAlignment="Top" RenderTransformOrigin="0,-0.673"/>
         <Label x:Name="label3" Content="Shoulder" HorizontalAlignment="Left" Margin="31,214,0,0" VerticalAlignment="Top"/>
         <Label x:Name="label4" Content="Claw" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="41,104,0,0"/>
-        <TextBox x:Name="textBox_Copy1" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,158,0,0"/>
-        <TextBox x:Name="textBox_Copy2" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,242,0,0"/>
-        <TextBox x:Name="textBox_Copy3" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,102,0,0"/>
-        <TextBox x:Name="textBox_Copy4" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,133,0,0"/>
-        <TextBox x:Name="textBox_Copy5" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,186,0,0"/>
-        <TextBox x:Name="textBox_Copy6" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,214,0,0"/>
-        <TextBox x:Name="textBox_Copy12" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,161,0,0"/>
-        <TextBox x:Name="textBox_Copy13" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,102,0,0"/>
-        <TextBox x:Name="textBox_Copy14" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,214,0,0"/>
-        <TextBox x:Name="textBox_Copy15" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,242,0,0"/>
-        <TextBox x:Name="textBox_Copy16" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,133,0,0"/>
-        <TextBox x:Name="textBox_Copy17" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,186,0,0"/>
+        <TextBox x:Name="textBox_Copy1" Text="{Binding Path=s_arm.MIN_DUTY[2], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,158,0,0"/>
+        <TextBox x:Name="textBox_Copy2" Text="{Binding Path=s_arm.MIN_DUTY[5], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,242,0,0"/>
+        <TextBox x:Name="textBox_Copy3" Text="{Binding Path=s_arm.MIN_DUTY[0], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,102,0,0"/>
+        <TextBox x:Name="textBox_Copy4" Text="{Binding Path=s_arm.MIN_DUTY[1], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,133,0,0"/>
+        <TextBox x:Name="textBox_Copy5" Text="{Binding Path=s_arm.MIN_DUTY[3], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,186,0,0"/>
+        <TextBox x:Name="textBox_Copy6" Text="{Binding Path=s_arm.MIN_DUTY[4], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,214,0,0"/>
+        <TextBox x:Name="textBox_Copy12" Text="{Binding Path=s_arm.MAX_DUTY[2], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,161,0,0"/>
+        <TextBox x:Name="textBox_Copy13" Text="{Binding Path=s_arm.MAX_DUTY[0], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,102,0,0"/>
+        <TextBox x:Name="textBox_Copy14" Text="{Binding Path=s_arm.MAX_DUTY[4], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,214,0,0"/>
+        <TextBox x:Name="textBox_Copy15" Text="{Binding Path=s_arm.MAX_DUTY[5], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,242,0,0"/>
+        <TextBox x:Name="textBox_Copy16" Text="{Binding Path=s_arm.MAX_DUTY[1], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,133,0,0"/>
+        <TextBox x:Name="textBox_Copy17" Text="{Binding Path=s_arm.MAX_DUTY[3], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="227,186,0,0"/>
         <Label x:Name="label6" Content="Min" HorizontalAlignment="Left" Margin="177,76,0,0" VerticalAlignment="Top"/>
         <Label x:Name="label7" Content="Max" HorizontalAlignment="Left" Margin="227,76,0,0" VerticalAlignment="Top"/>
         <Label x:Name="label8" Content="Status:" HorizontalAlignment="Left" Margin="324,66,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="403,69,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="51"/>
         <Label x:Name="label8_Copy" Content="Acceleration &#xD;&#xA;Scale:" HorizontalAlignment="Left" Margin="324,99,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="textBox_Copy18" HorizontalAlignment="Left" Height="23" Margin="403,108,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="51"/>
         <Label x:Name="label8_Copy1" Content="Step Size:" HorizontalAlignment="Left" Margin="324,136,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="textBox_Copy19" HorizontalAlignment="Left" Height="23" Margin="403,144,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="51"/>
         <Label x:Name="label8_Copy2" Content="Velocity&#xD;&#xA;Limit:" HorizontalAlignment="Left" Margin="324,169,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="textBox_Copy20" HorizontalAlignment="Left" Height="23" Margin="403,186,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="51"/>
+        <CheckBox x:Name="checkBox" Content="Locked" HorizontalAlignment="Left" Margin="403,73,0,0" VerticalAlignment="Top" IsChecked="{Binding Path=theory.LockState, Mode=TwoWay}"/>
+        <Label x:Name="label3_Copy" Content="Base" HorizontalAlignment="Left" Margin="31,242,0,0" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

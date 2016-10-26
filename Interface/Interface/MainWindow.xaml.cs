@@ -23,9 +23,9 @@ namespace Interface
         public MainWindow()
         {
             InitializeComponent();
-            this.DataContext = ArmState.GetInstance();
             try
-            {
+            {                
+                s_arm = ArmState.GetInstance();
                 m_arm = ArmControl.GetInstance();
 
                 var ports = ArmControl.ListPortNames();
@@ -35,6 +35,13 @@ namespace Interface
 
                 var theory = new BetterControl();
                 theory.Attach(m_myo, m_arm);
+
+                this.DataContext = new
+                {
+                    s_arm = s_arm,
+                    m_arm = m_arm,
+                    theory = theory
+                };
             }
             catch (Exception ex)
             {
@@ -44,5 +51,8 @@ namespace Interface
         }
         MyoControl m_myo;
         ArmControl m_arm;
+        ArmState s_arm;
+
+
     }
 }

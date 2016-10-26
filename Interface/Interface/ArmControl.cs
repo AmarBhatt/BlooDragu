@@ -12,7 +12,8 @@ namespace Interface
 {
     public class ArmState : INotifyPropertyChanged
     {
-        public float[] Angles = new float[6];
+        public const int NO_JOINTS = 6;
+        private float[] Angles = new float[NO_JOINTS];
         private bool claw = false;
 
         protected ArmState() { }
@@ -23,11 +24,11 @@ namespace Interface
             if (a_instance == null)
             {
                 a_instance = new ArmState();
-                for (var i = 0; i < a_instance.Angles.Length; ++i)
-                    a_instance.Angles[i] = 7;
+                for (var i = 0; i < NO_JOINTS; ++i)
+                    a_instance[i] = 7;
 
-                a_instance.Angles[CLAW_IDX] = CLAW_CLOSED;
-                a_instance.claw = true;
+                a_instance[CLAW_IDX] = CLAW_CLOSED;
+                a_instance.ClawState = true;
             }
             return a_instance;
         }
@@ -41,20 +42,33 @@ namespace Interface
             {
                 claw = value;
                 // Call OnPropertyChanged whenever the property is updated
-                Console.WriteLine("Test0");
                 OnPropertyChanged("ClawState");
             }
         }
 
+        public float this[int idx]
+        {
+            get { return Angles[idx]; }
+            set
+            {
+                Angles[idx] = value;
+                OnPropertyChanged(null);
+            }
+        }
+
+        public void Print()
+        {
+            Console.WriteLine(string.Join(" ", Angles));
+        }
+
+
         protected void OnPropertyChanged(string name)
         {
-            Console.WriteLine("Test1");
             PropertyChangedEventHandler handler = PropertyChanged;
 
             if (handler != null)
             {
                 handler(this, new PropertyChangedEventArgs(name));
-                Console.WriteLine("Test2");
             }
         }
 
@@ -67,23 +81,46 @@ namespace Interface
         //    Angles[CLAW_IDX] = CLAW_CLOSED;
         //}
 
-        public float[] MAX_DUTY = { 11.0f, 12.0f , 12.0f , 12.0f , 8.0f , 12.0f};
+        public float[] max_duty = { 11.0f, 12.0f , 12.0f , 12.0f , 8.0f , 12.0f};
 
-        public const float MIN_DUTY = 5;
+        public float[] MAX_DUTY
+        {
+            get { return max_duty; }
+            set
+            {
+                max_duty = value;
+                // Call OnPropertyChanged whenever the property is updated
+                OnPropertyChanged("MAX_DUTY");
+            }
+        }
+
+
+        public float[] min_duty = { 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f };
+
+        public float[] MIN_DUTY
+        {
+            get { return min_duty; }
+            set
+            {
+                min_duty = value;
+                // Call OnPropertyChanged whenever the property is updated
+                OnPropertyChanged("MIN_DUTY");
+            }
+        }
 
         public const int CLAW_IDX = 0;
         public const float CLAW_CLOSED = 8.2f;
         public const float CLAW_OPEN = 11.0f;
         public void ToggleClaw()
         {
-            if (Angles[CLAW_IDX] > CLAW_CLOSED)
+            if (a_instance[CLAW_IDX] > CLAW_CLOSED)
             {
-                Angles[CLAW_IDX] = CLAW_CLOSED;
+                a_instance[CLAW_IDX] = CLAW_CLOSED;
                 a_instance.ClawState = false;
             }
             else
             {
-                Angles[CLAW_IDX] = CLAW_OPEN;
+                a_instance[CLAW_IDX] = CLAW_OPEN;
                 a_instance.ClawState = true;
             }
 
@@ -93,12 +130,12 @@ namespace Interface
 
         public void Update(int idx, float step)
         {
-            Angles[idx] += step;
-            Angles[idx] = Math.Max(Math.Min(Angles[idx], MAX_DUTY[idx]), MIN_DUTY);
+            a_instance[idx] += step;
+            a_instance[idx] = Math.Max(Math.Min(a_instance[idx], MAX_DUTY[idx]), MIN_DUTY[idx]);
         }
         public void Set(int idx, float angle)
         {
-            Angles[idx] = Math.Max(Math.Min(angle, MAX_DUTY[idx]), MIN_DUTY);
+            a_instance[idx] = Math.Max(Math.Min(angle, MAX_DUTY[idx]), MIN_DUTY[idx]);
         }
     }
     public class ArmControl
@@ -138,7 +175,7 @@ namespace Interface
 
         public void SendPosition(ArmState state)
         {
-            var str = string.Join(" ", state.Angles);
+            var str = string.Join(" ", state);
             if (m_serial.IsOpen)
             {
                 lock (m_serial)

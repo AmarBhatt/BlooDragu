@@ -1,6 +1,7 @@
 ﻿using MyoSharp.Math;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -85,7 +86,7 @@ namespace Interface
         virtual protected void SendUpdate()
         {
             m_arm.SendPosition(CurrentState);
-            Console.WriteLine(string.Join(" ", CurrentState.Angles));
+            CurrentState.Print();
         }
 
         public override void Detach()
@@ -158,7 +159,7 @@ namespace Interface
 
                         ArmControl.SendPosition(CurrentState);
                         Console.WriteLine("Arm position (Pose: {0}, joint: {1})", MyoControl.Gesture, current_joint);
-                        Console.WriteLine(string.Join(" ", CurrentState.Angles));
+                        CurrentState.Print();
                     }
                     else
                         Console.WriteLine("Armband Not connected");
@@ -178,13 +179,32 @@ namespace Interface
     }
 
 
-    public class BetterControl : PoolingControlTheory
+    public class BetterControl : PoolingControlTheory, INotifyPropertyChanged
     {
         public BetterControl()
         {
         }
-
+        public event PropertyChangedEventHandler PropertyChanged;
         protected bool is_updating = false;
+        public bool LockState
+        {
+            get { return is_updating; }
+            set
+            {
+                is_updating = value;
+                // Call OnPropertyChanged whenever the property is updated
+                OnPropertyChanged("LockState");
+            }
+        }
+        protected void OnPropertyChanged(string name)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
         public TimeSpan claw_interval = TimeSpan.FromSeconds(1);
         protected DateTime last_claw = DateTime.UtcNow;
         protected override void OnPoseChanged(object sender, EventArgs e)
@@ -200,7 +220,7 @@ namespace Interface
                 }
                 else
                 {
-                    is_updating = !is_updating;
+                    LockState = !LockState;
                 }
                 last_claw = DateTime.UtcNow;
             }

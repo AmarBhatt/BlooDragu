@@ -236,6 +236,36 @@ namespace Interface
         }
         protected Vector3F rest_acc;
         public Vector3F velocity = new Vector3F(0.0f, 0.0f, 0.0f);
+        private float maxVel = 0.00001f;
+        private float acc = 0.01f;
+        private float step_size = 0.0001f;
+
+        public float MAX
+        {
+            get { return maxVel; }
+            set
+            {
+                maxVel = value;
+            }
+        }
+        public float ACC
+        {
+            get { return acc; }
+            set
+            {
+                acc = value;
+            }
+        }
+
+        public float STEP_SIZE
+        {
+            get { return step_size; }
+            set
+            {
+                step_size = value;
+            }
+        }
+
         protected override void Loop(TimeSpan span)
         {
             if (m_myo.IsConnected)
@@ -244,10 +274,10 @@ namespace Interface
                 {
                     if (is_updating)
                     {
-                        velocity = velocity + (m_myo.Gyroscope) * (float)span.TotalSeconds * 0.01f;
+                        velocity = velocity + (m_myo.Gyroscope) * (float)span.TotalSeconds * ACC;
 
-                        var max = 0.00001f;
-                        var step_size = Math.Min(max, Math.Max(-max, (float)velocity.Z * 0.0001f));
+                        var max = maxVel;
+                        var step_size = Math.Min(max, Math.Max(-max, (float)velocity.Z * STEP_SIZE));
                         CurrentState.Update(3, step_size);
                     }
                     else

@@ -53,6 +53,18 @@ namespace Interface
         ArmControl m_arm;
         ArmState s_arm;
 
-
+        private void goHome(object sender, RoutedEventArgs e)
+        {
+            //Joint1.Text = "7";
+            //Joint3.Text = "7";
+            Joint0.IsChecked = true;
+            s_arm[0] = 10;
+            s_arm[1] = 7;
+            s_arm[2] = 7;
+            s_arm[3] = 7;
+            s_arm[4] = 7;
+            s_arm[5] = 7;
+            
+        }
     }
 }

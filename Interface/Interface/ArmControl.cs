@@ -14,7 +14,7 @@ namespace Interface
     {
         public const int NO_JOINTS = 6;
         private float[] Angles = new float[NO_JOINTS];
-        private bool claw = false;
+        private bool claw = true;
 
         protected ArmState() { }
         static ArmState a_instance;
@@ -27,7 +27,7 @@ namespace Interface
                 for (var i = 0; i < NO_JOINTS; ++i)
                     a_instance[i] = 7;
 
-                a_instance[CLAW_IDX] = CLAW_CLOSED;
+                a_instance[CLAW_IDX] = CLAW_OPEN;
                 a_instance.ClawState = true;
             }
             return a_instance;
@@ -54,6 +54,11 @@ namespace Interface
                 Angles[idx] = value;
                 OnPropertyChanged(null);
             }
+        }
+
+        public float[] ANGLES
+        {
+            get { return Angles; }
         }
 
         public void Print()
@@ -132,6 +137,7 @@ namespace Interface
         {
             a_instance[idx] += step;
             a_instance[idx] = Math.Max(Math.Min(a_instance[idx], MAX_DUTY[idx]), MIN_DUTY[idx]);
+            //Console.WriteLine("Updating");
         }
         public void Set(int idx, float angle)
         {
@@ -175,11 +181,15 @@ namespace Interface
 
         public void SendPosition(ArmState state)
         {
-            var str = string.Join(" ", state);
+            var str = string.Join(" ", state.ANGLES);
+            
             if (m_serial.IsOpen)
             {
                 lock (m_serial)
+                {
                     m_serial.WriteLine(str);
+                    Console.WriteLine(str);
+                }
             }
         }
 

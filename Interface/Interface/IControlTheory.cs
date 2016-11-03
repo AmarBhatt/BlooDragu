@@ -239,9 +239,9 @@ namespace Interface
                 }
                 last_claw = DateTime.UtcNow;
             }
-            else if ((m_myo.Gesture == 3 || m_myo.Gesture == 5) && DateTime.UtcNow.Subtract(last_joint_change) > joint_interval)
+            else if ((m_myo.Gesture == 3 || m_myo.Gesture == 5) && DateTime.UtcNow.Subtract(last_joint_change) > joint_interval && LockState)
             {
-                if (m_myo.Gesture == 3 && just_changed == false)
+                if (m_myo.Gesture == 3)
                 {
                     CurrentJoint--;
                     if (CurrentJoint < 1)

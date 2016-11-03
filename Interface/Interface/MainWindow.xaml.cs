@@ -66,5 +66,10 @@ namespace Interface
             s_arm[5] = 7;
             
         }
+
+        private void CurrJoint_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            return;
+        }
     }
 }

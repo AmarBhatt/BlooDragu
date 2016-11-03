@@ -64,6 +64,21 @@ namespace Interface
         bool m_running;
         Task m_arm_task;
         Task m_compute_task;
+
+        protected TimeSpan claw_interval = TimeSpan.FromSeconds(1);
+        protected DateTime last_claw = DateTime.UtcNow;
+        protected bool is_updating = false;
+        public bool LockState
+        {
+            get { return is_updating; }
+            set
+            {
+                is_updating = value;
+                // Call OnPropertyChanged whenever the property is updated
+                OnPropertyChanged("LockState");
+            }
+        }
+
         public override void Attach(MyoControl MyoControl, ArmControl ArmControl)
         {
             base.Attach(MyoControl, ArmControl);
@@ -90,7 +105,11 @@ namespace Interface
             });
         }
 
-        virtual protected void Setup() { }
+        virtual protected void Setup()
+        {
+            while (m_myo.IsConnected == false)
+                Task.Delay(100).Wait();
+        }
         abstract protected void Loop(TimeSpan span);
 
         virtual protected void SendUpdate()
@@ -106,48 +125,42 @@ namespace Interface
             m_compute_task.Wait();
             base.Detach();
         }
+
+        protected override void OnPoseChanged(object sender, EventArgs e)
+        {
+            base.OnPoseChanged(sender, e);
+
+            if (m_myo.Gesture == 4 && DateTime.UtcNow.Subtract(last_claw) > claw_interval)
+            {
+                CurrentState.ToggleClaw();
+                Console.WriteLine("Claw toggled");
+                last_claw = DateTime.UtcNow;
+            }
+        }
     }
 
-    public class BetterControl : PoolingControlTheory
+    public class StartStopControl : PoolingControlTheory
     {
-        public BetterControl()
+        public StartStopControl()
         {
             MaxVelocity = 0.00001f;
             AccelerationScale = 0.01f;
             StepSize = 0.0001f;
         }
-        protected bool is_updating = false;
-        public bool LockState
-        {
-            get { return is_updating; }
-            set
-            {
-                is_updating = value;
-                // Call OnPropertyChanged whenever the property is updated
-                OnPropertyChanged("LockState");
-            }
-        }
 
-        public TimeSpan claw_interval = TimeSpan.FromSeconds(1);
         public TimeSpan joint_interval = TimeSpan.FromSeconds(1);
-        protected DateTime last_claw = DateTime.UtcNow;
         protected DateTime last_joint_change = DateTime.UtcNow;
+        public TimeSpan lock_interval = TimeSpan.FromSeconds(1);
+        protected DateTime last_lock_change = DateTime.UtcNow;
         protected override void OnPoseChanged(object sender, EventArgs e)
         {
             base.OnPoseChanged(sender, e);
 
-            if ((m_myo.Gesture == 4 || m_myo.Gesture == 2) && DateTime.UtcNow.Subtract(last_claw) > claw_interval)
+            if (m_myo.Gesture == 2 && DateTime.UtcNow.Subtract(last_lock_change) > lock_interval)
             {
-                if (m_myo.Gesture == 4)
-                {
-                    CurrentState.ToggleClaw();
-                    Console.WriteLine("Claw toggled");
-                }
-                else
-                {
-                    LockState = !LockState;
-                }
-                last_claw = DateTime.UtcNow;
+                LockState = !LockState;
+                velocity = new Vector3F(0, 0, 0);
+                last_lock_change = DateTime.UtcNow;
             }
             else if ((m_myo.Gesture == 3 || m_myo.Gesture == 5) && DateTime.UtcNow.Subtract(last_joint_change) > joint_interval && LockState)
             {
@@ -161,25 +174,17 @@ namespace Interface
                 else
                 {
                     CurrentJoint++;
-                    if(CurrentJoint > 5)
+                    if (CurrentJoint > 5)
                         CurrentJoint = 1;
                     Console.WriteLine("switch to joint: {0}", CurrentJoint);
                 }
             }
-        }
-        protected override void Setup()
-        {
-            base.Setup();
-
-            while (m_myo.IsConnected == false)
-                Task.Delay(100).Wait();
         }
 
         public float MaxVelocity { get; set; }
         public float AccelerationScale { get; set; }
         public float StepSize { get; set; }
 
-        
         protected int current_joint = 1;
         public int CurrentJoint
         {
@@ -205,30 +210,10 @@ namespace Interface
                         var step_size = Math.Min(MaxVelocity, Math.Max(-MaxVelocity, (float)velocity.Z * StepSize));
                         CurrentState.Update(CurrentJoint, step_size);
                     }
-                    else
-                    {
-                        velocity = new Vector3F(0, 0, 0);
-                        if (m_myo.Gesture == 3 && just_changed == false)
-                        {
-                            just_changed = true;
-                            current_joint--;
-                            if (current_joint < 1)
-                                current_joint = 5;
-                            Console.WriteLine("switch to joint: {0}", current_joint);
-                        }
-                        else if (m_myo.Gesture == 5 && just_changed == false)
-                        {
-                            just_changed = true;
-                            current_joint++;
-                            current_joint = current_joint % 5 + 1;
-                            Console.WriteLine("switch to joint: {0}", current_joint);
-                        }
-                        else if (m_myo.Gesture == 0)
-                            just_changed = false;
-                    }
                 }
             }
         }
+    }
 
 
 

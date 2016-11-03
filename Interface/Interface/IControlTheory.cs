@@ -239,6 +239,8 @@ namespace Interface
         private float maxVel = 0.00001f;
         private float acc = 0.01f;
         private float step_size = 0.0001f;
+        public int current_joint = 1;
+        private bool just_changed = false;
 
         public float MAX
         {
@@ -266,6 +268,27 @@ namespace Interface
             }
         }
 
+        //protected override void Loop(TimeSpan span)
+        //{
+        //    if (m_myo.IsConnected)
+        //    {
+        //        if (m_myo.Accelerometer != null && m_myo.Gesture != null)
+        //        {
+        //            if (is_updating)
+        //            {
+        //                velocity = velocity + (m_myo.Gyroscope) * (float)span.TotalSeconds * ACC;
+        //                var max = maxVel;
+        //                var step_size = Math.Min(max, Math.Max(-max, (float)velocity.Z * STEP_SIZE));
+        //                CurrentState.Update(3, step_size);
+        //            }
+        //            else
+        //                velocity = new Vector3F(0, 0, 0);
+        //            //Console.WriteLine("X:{0} Y:{1} Z:{2}", velocity.X, velocity.Y, velocity.Z);
+        //            //CurrentState.Update(4, -0.3f* step_size);
+        //        }
+        //    }
+        //}
+
         protected override void Loop(TimeSpan span)
         {
             if (m_myo.IsConnected)
@@ -275,17 +298,82 @@ namespace Interface
                     if (is_updating)
                     {
                         velocity = velocity + (m_myo.Gyroscope) * (float)span.TotalSeconds * ACC;
-
                         var max = maxVel;
                         var step_size = Math.Min(max, Math.Max(-max, (float)velocity.Z * STEP_SIZE));
-                        CurrentState.Update(3, step_size);
+                        CurrentState.Update(current_joint, step_size);
                     }
                     else
+                    {
                         velocity = new Vector3F(0, 0, 0);
+                        if (m_myo.Gesture == 3 && just_changed == false)
+                        {
+                            just_changed = true;
+                            current_joint--;
+                            if (current_joint < 1)
+                                current_joint = 5;
+                            Console.WriteLine("switch to joint: {0}", current_joint);
+                        }
+                        else if (m_myo.Gesture == 5 && just_changed == false)
+                        {
+                            just_changed = true;
+                            current_joint++;
+                            current_joint = current_joint % 5 + 1;
+                            Console.WriteLine("switch to joint: {0}", current_joint);
+                        }
+                        else if (m_myo.Gesture == 0)
+                            just_changed = false;
+                    }
+                        
                     //Console.WriteLine("X:{0} Y:{1} Z:{2}", velocity.X, velocity.Y, velocity.Z);
                     //CurrentState.Update(4, -0.3f* step_size);
                 }
             }
         }
+
+
+
     }
 }
+
+
+/*
+ * {
+                    if (MyoControl.IsConnected)
+                    {
+                        //Console.WriteLine("MyoBand Accelerometer (midpoint: {0}):", midpoint);
+                        //Console.WriteLine(string.Join(" ", MyoControl.Accelerometer));
+
+                        if (MyoControl.Accelerometer != null && MyoControl.Gesture != null)
+                        {
+                            if (MyoControl.Gesture == 3 && just_changed == false)
+                            {
+                                just_changed = true;
+                                current_joint--;
+                                if (current_joint < 0)
+                                    current_joint = 5;
+                            }
+                            else if (MyoControl.Gesture == 2 && just_changed == false)
+                            {
+                                just_changed = true;
+                                current_joint++;
+                                current_joint = current_joint % 6;
+                            }
+                            else if (MyoControl.Gesture == 0)
+                                just_changed = false;
+                            if (MyoControl.Accelerometer[2] < midpoint - REST_WINDOW)
+                                CurrentState.Update(current_joint, -STEP_SIZE);
+                            else if (MyoControl.Accelerometer[2] > midpoint + REST_WINDOW)
+                                CurrentState.Update(current_joint, STEP_SIZE);
+                        }
+
+                        ArmControl.SendPosition(CurrentState);
+                        Console.WriteLine("Arm position (Pose: {0}, joint: {1})", MyoControl.Gesture, current_joint);
+                        CurrentState.Print();
+                    }
+                    else
+                        Console.WriteLine("Armband Not connected");
+
+
+                    await Task.Delay(Tick);
+                }
+*/

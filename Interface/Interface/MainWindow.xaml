@@ -7,7 +7,7 @@
         <GroupBox x:Name="groupBox" Header="Joint Control" HorizontalAlignment="Left" Height="240" Margin="10,52,0,0" VerticalAlignment="Top" Width="290">
             <CheckBox x:Name="Joint0" Content="Open" HorizontalAlignment="Left" Margin="90,39,0,0" VerticalAlignment="Top" IsChecked="{Binding s_arm.ClawState, Mode=TwoWay}"/>
         </GroupBox>
-        <TextBox x:Name="CurrJoint" Text="{Binding Path=theory.current_joint, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" Margin="22,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="43"/>
+        <TextBox x:Name="CurrJoint" Text="{Binding Path=theory.CurrentJoint, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" Margin="22,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="43"/>
 
         <TextBox x:Name="Joint1" Text="{Binding Path=s_arm[1], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,130,0,0" />
         <TextBox x:Name="Joint2" Text="{Binding Path=s_arm[2], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,158,0,0"/>

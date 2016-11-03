@@ -196,6 +196,19 @@ namespace Interface
                 OnPropertyChanged("LockState");
             }
         }
+
+        protected int current_joint = 1;
+        public int CurrentJoint
+        {
+            get { return current_joint; }
+            set
+            {
+                current_joint = value;
+                // Call OnPropertyChanged whenever the property is updated
+                OnPropertyChanged("CurrentJoint");
+            }
+        }
+
         protected void OnPropertyChanged(string name)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
@@ -206,7 +219,9 @@ namespace Interface
             }
         }
         public TimeSpan claw_interval = TimeSpan.FromSeconds(1);
+        public TimeSpan joint_interval = TimeSpan.FromSeconds(1);
         protected DateTime last_claw = DateTime.UtcNow;
+        protected DateTime last_joint_change = DateTime.UtcNow;
         protected override void OnPoseChanged(object sender, EventArgs e)
         {
             base.OnPoseChanged(sender, e);
@@ -224,6 +239,23 @@ namespace Interface
                 }
                 last_claw = DateTime.UtcNow;
             }
+            else if ((m_myo.Gesture == 3 || m_myo.Gesture == 5) && DateTime.UtcNow.Subtract(last_joint_change) > joint_interval)
+            {
+                if (m_myo.Gesture == 3 && just_changed == false)
+                {
+                    CurrentJoint--;
+                    if (CurrentJoint < 1)
+                        CurrentJoint = 5;
+                    Console.WriteLine("switch to joint: {0}", CurrentJoint);
+                }
+                else
+                {
+                    CurrentJoint++;
+                    if(CurrentJoint > 5)
+                        CurrentJoint = 1;
+                    Console.WriteLine("switch to joint: {0}", CurrentJoint);
+                }
+            }
         }
         protected override void Setup()
         {
@@ -239,7 +271,6 @@ namespace Interface
         private float maxVel = 0.00001f;
         private float acc = 0.01f;
         private float step_size = 0.0001f;
-        public int current_joint = 1;
         private bool just_changed = false;
 
         public float MAX
@@ -300,28 +331,28 @@ namespace Interface
                         velocity = velocity + (m_myo.Gyroscope) * (float)span.TotalSeconds * ACC;
                         var max = maxVel;
                         var step_size = Math.Min(max, Math.Max(-max, (float)velocity.Z * STEP_SIZE));
-                        CurrentState.Update(current_joint, step_size);
+                        CurrentState.Update(CurrentJoint, step_size);
                     }
                     else
                     {
                         velocity = new Vector3F(0, 0, 0);
-                        if (m_myo.Gesture == 3 && just_changed == false)
-                        {
-                            just_changed = true;
-                            current_joint--;
-                            if (current_joint < 1)
-                                current_joint = 5;
-                            Console.WriteLine("switch to joint: {0}", current_joint);
-                        }
-                        else if (m_myo.Gesture == 5 && just_changed == false)
-                        {
-                            just_changed = true;
-                            current_joint++;
-                            current_joint = current_joint % 5 + 1;
-                            Console.WriteLine("switch to joint: {0}", current_joint);
-                        }
-                        else if (m_myo.Gesture == 0)
-                            just_changed = false;
+                        //if (m_myo.Gesture == 3 && just_changed == false)
+                        //{
+                        //    just_changed = true;
+                        //    current_joint--;
+                        //    if (current_joint < 1)
+                        //        current_joint = 5;
+                        //    Console.WriteLine("switch to joint: {0}", current_joint);
+                        //}
+                        //else if (m_myo.Gesture == 5 && just_changed == false)
+                        //{
+                        //    just_changed = true;
+                        //    current_joint++;
+                        //    current_joint = current_joint % 5 + 1;
+                        //    Console.WriteLine("switch to joint: {0}", current_joint);
+                        //}
+                        //else if (m_myo.Gesture == 0)
+                        //    just_changed = false;
                     }
                         
                     //Console.WriteLine("X:{0} Y:{1} Z:{2}", velocity.X, velocity.Y, velocity.Z);

@@ -33,7 +33,7 @@ namespace Interface
 
                 m_myo = MyoControl.GetInstance();
 
-                var theory = new StartStopControl();
+                var theory = new AdvancedControl();
                 theory.Attach(m_myo, m_arm);
 
                 this.DataContext = new

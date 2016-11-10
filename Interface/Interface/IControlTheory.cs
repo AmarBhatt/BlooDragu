@@ -115,7 +115,7 @@ namespace Interface
         virtual protected void SendUpdate()
         {
             m_arm.SendPosition(CurrentState);
-            CurrentState.Print();
+            //CurrentState.Print();
         }
 
         public override void Detach()
@@ -126,6 +126,8 @@ namespace Interface
             base.Detach();
         }
 
+        public TimeSpan lock_interval = TimeSpan.FromSeconds(1);
+        protected DateTime last_lock_change = DateTime.UtcNow;
         protected override void OnPoseChanged(object sender, EventArgs e)
         {
             base.OnPoseChanged(sender, e);
@@ -135,6 +137,11 @@ namespace Interface
                 CurrentState.ToggleClaw();
                 Console.WriteLine("Claw toggled");
                 last_claw = DateTime.UtcNow;
+            }
+            else if (m_myo.Gesture == 5 && DateTime.UtcNow.Subtract(last_lock_change) > lock_interval)
+            {
+                LockState = !LockState;
+                last_lock_change = DateTime.UtcNow;
             }
         }
     }
@@ -150,17 +157,13 @@ namespace Interface
 
         public TimeSpan joint_interval = TimeSpan.FromSeconds(1);
         protected DateTime last_joint_change = DateTime.UtcNow;
-        public TimeSpan lock_interval = TimeSpan.FromSeconds(1);
-        protected DateTime last_lock_change = DateTime.UtcNow;
         protected override void OnPoseChanged(object sender, EventArgs e)
         {
             base.OnPoseChanged(sender, e);
 
-            if (m_myo.Gesture == 2 && DateTime.UtcNow.Subtract(last_lock_change) > lock_interval)
+            if (m_myo.Gesture == 2 && LockState == false)
             {
-                LockState = !LockState;
                 velocity = new Vector3F(0, 0, 0);
-                last_lock_change = DateTime.UtcNow;
             }
             else if ((m_myo.Gesture == 3 || m_myo.Gesture == 5) && DateTime.UtcNow.Subtract(last_joint_change) > joint_interval && LockState)
             {
@@ -215,7 +218,57 @@ namespace Interface
         }
     }
 
+    public class AdvancedControl : PoolingControlTheory
+    {
+        public AdvancedControl()
+        {
+            MaxVelocity = 0.05f;
+            AccelerationScale = 0.0005f;
+            StepSize = 1.0f;
+        }
+        public float MaxVelocity { get; set; }
+        public float AccelerationScale { get; set; }
+        public float StepSize { get; set; }
 
 
+        protected Vector3F velocity = new Vector3F(0.0f, 0.0f, 0.0f);
+        protected bool just_changed = false;
+        protected override void Loop(TimeSpan span)
+        {
+            if (m_myo.IsConnected)
+            {
+                if (m_myo.Accelerometer != null && m_myo.Gesture != null)
+                {
+                    if (is_updating)
+                    {
+                        var minVelocity = 0.01f;
+                        velocity = velocity + (m_myo.Gyroscope) * (float)span.TotalSeconds * AccelerationScale;
+                        var step_size_x = Math.Min(MaxVelocity, Math.Max(-MaxVelocity, (float)velocity.X * StepSize));
+                        var step_size_y = Math.Min(MaxVelocity, Math.Max(-MaxVelocity, (float)velocity.Y * StepSize));
+                        var step_size_z = Math.Min(MaxVelocity, Math.Max(-MaxVelocity, (float)velocity.Z * StepSize));
+
+                        if (Math.Abs(step_size_x) > Math.Abs(step_size_y) && Math.Abs(step_size_x) > Math.Abs(step_size_z))
+                        {
+                            if (Math.Abs(step_size_x) > minVelocity)
+                                CurrentState.Update(1, -step_size_x);
+                        }
+                        else if (Math.Abs(step_size_y) > Math.Abs(step_size_z))
+                        {
+                            if (Math.Abs(step_size_y) > minVelocity)
+                                CurrentState.Update(3, -step_size_y); // Y is inverted
+                        }
+                        else
+                        {
+                            if (Math.Abs(step_size_z) > minVelocity)
+                                CurrentState.Update(5, step_size_z); // Y is inverted
+                        }
+                        Task.Delay(10).Wait();
+                    }
+                    else
+                        velocity = new Vector3F(0.0f, 0.0f, 0.0f);
+                }
+            }
+        }
     }
+
 }

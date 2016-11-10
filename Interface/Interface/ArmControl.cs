@@ -27,7 +27,7 @@ namespace Interface
                 for (var i = 0; i < NO_JOINTS; ++i)
                     a_instance[i] = 7;
 
-                a_instance[CLAW_IDX] = CLAW_OPEN;
+                a_instance[CLAW_IDX] = a_instance.CLAW_OPEN;
                 a_instance.ClawState = true;
             }
             return a_instance;
@@ -86,7 +86,7 @@ namespace Interface
         //    Angles[CLAW_IDX] = CLAW_CLOSED;
         //}
 
-        public float[] max_duty = { 11.0f, 12.0f , 12.0f , 12.0f , 8.0f , 12.0f};
+        public float[] max_duty = { 10.5f, 12.0f , 12.0f , 12.0f , 8.0f , 12.0f};
 
         public float[] MAX_DUTY
         {
@@ -100,7 +100,7 @@ namespace Interface
         }
 
 
-        public float[] min_duty = { 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f };
+        public float[] min_duty = { 8.0f, 5.0f, 5.0f, 5.0f, 5.0f, 3.0f };
 
         public float[] MIN_DUTY
         {
@@ -114,8 +114,8 @@ namespace Interface
         }
 
         public const int CLAW_IDX = 0;
-        public const float CLAW_CLOSED = 8.2f;
-        public const float CLAW_OPEN = 11.0f;
+        public float CLAW_OPEN { get { return MAX_DUTY[CLAW_IDX]; } }
+        public float CLAW_CLOSED { get { return MIN_DUTY[CLAW_IDX]; } }
         public void ToggleClaw()
         {
             if (a_instance[CLAW_IDX] > CLAW_CLOSED)
@@ -188,7 +188,6 @@ namespace Interface
                 lock (m_serial)
                 {
                     m_serial.WriteLine(str);
-                    Console.WriteLine(str);
                 }
             }
         }

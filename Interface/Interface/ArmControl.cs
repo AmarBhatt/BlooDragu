@@ -25,7 +25,7 @@ namespace Interface
             {
                 a_instance = new ArmState();
                 for (var i = 0; i < NO_JOINTS; ++i)
-                    a_instance[i] = 7;
+                    a_instance[i] = reset_duty[i];
 
                 a_instance[CLAW_IDX] = a_instance.CLAW_OPEN;
                 a_instance.ClawState = true;
@@ -66,6 +66,11 @@ namespace Interface
             Console.WriteLine(string.Join(" ", Angles));
         }
 
+        public void Home()
+        {
+            for (var i = 0; i < NO_JOINTS; ++i)
+                a_instance[i] = reset_duty[i];
+        }
 
         protected void OnPropertyChanged(string name)
         {
@@ -77,16 +82,8 @@ namespace Interface
             }
         }
 
-
-        //public ArmState()
-        //{
-        //    for (var i = 0; i < Angles.Length; ++i)
-        //        Angles[i] = 7;
-
-        //    Angles[CLAW_IDX] = CLAW_CLOSED;
-        //}
-
-        public float[] max_duty = { 10.5f, 12.0f , 12.0f , 12.0f , 8.0f , 12.0f};
+        public static readonly float[] reset_duty = { 12.0f, 8.0f, 7.0f, 7.0f, 7.0f, 7.0f};
+        public float[] max_duty = { 12.0f, 12.0f , 12.0f , 12.0f , 8.0f , 8.0f};
 
         public float[] MAX_DUTY
         {
@@ -100,7 +97,7 @@ namespace Interface
         }
 
 
-        public float[] min_duty = { 8.0f, 5.0f, 5.0f, 5.0f, 5.0f, 3.0f };
+        public float[] min_duty = { 9.0f, 5.0f, 5.0f, 7.0f, 5.0f, 3.0f };
 
         public float[] MIN_DUTY
         {

@@ -83,7 +83,7 @@ namespace Interface
         {
             base.Attach(MyoControl, ArmControl);
             m_running = true;
-            m_update_interval = TimeSpan.FromMilliseconds(100);
+            m_update_interval = TimeSpan.FromMilliseconds(150);
             Setup();
             m_arm_task = Task.Run(async () =>
             {
@@ -231,6 +231,22 @@ namespace Interface
         public float StepSize { get; set; }
 
 
+        public int SecondJoint = 1;
+        private DateTime LastJointChange = DateTime.UtcNow;
+        protected override void OnPoseChanged(object sender, EventArgs e)
+        {
+            base.OnPoseChanged(sender, e);
+
+            if(m_myo.Gesture == 2 && DateTime.UtcNow.Subtract(LastJointChange) > TimeSpan.FromSeconds(2))
+            {
+                LastJointChange = DateTime.UtcNow;
+                if (SecondJoint == 1)
+                    SecondJoint = 2;
+                else
+                    SecondJoint = 1;
+            }
+        }
+
         protected Vector3F velocity = new Vector3F(0.0f, 0.0f, 0.0f);
         protected bool just_changed = false;
         protected override void Loop(TimeSpan span)
@@ -254,13 +270,21 @@ namespace Interface
                         }
                         else if (Math.Abs(step_size_y) > Math.Abs(step_size_z))
                         {
-                            if (Math.Abs(step_size_y) > minVelocity)
-                                CurrentState.Update(3, -step_size_y); // Y is inverted
+                            if (Math.Abs(step_size_y) > 0.005f)
+                            {
+                                if (SecondJoint == 1)
+                                {
+                                    CurrentState.Update(3, -step_size_y);
+                                    CurrentState.Update(4, 0.6f * step_size_y);
+                                }
+                                else
+                                    CurrentState.Update(SecondJoint, -step_size_y);
+                            }
                         }
                         else
                         {
                             if (Math.Abs(step_size_z) > minVelocity)
-                                CurrentState.Update(5, step_size_z); // Y is inverted
+                                CurrentState.Update(5, step_size_z);
                         }
                         Task.Delay(10).Wait();
                     }

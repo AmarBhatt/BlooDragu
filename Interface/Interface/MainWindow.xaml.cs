@@ -52,6 +52,7 @@ namespace Interface
         MyoControl m_myo;
         ArmControl m_arm;
         ArmState s_arm;
+        AdvancedControl theory;
 
         private void goHome(object sender, RoutedEventArgs e)
         {
@@ -66,5 +67,26 @@ namespace Interface
         {
             return;
         }
+
+        private void radioButtons_CheckedChanged(object sender, EventArgs e)
+        {
+            RadioButton radioButton = sender as RadioButton;
+            int buttonid = (int)radioButton.Tag;
+            switch (buttonid)
+            {
+                case 0:
+                    theory.StepSize = 0.5f;
+                    break;
+                case 1:
+                    theory.StepSize = 1;
+                    break;
+                case 2:
+                    theory.StepSize = 2;
+                    break;
+                default:
+                    break;
+            }
+        }
+
     }
 }

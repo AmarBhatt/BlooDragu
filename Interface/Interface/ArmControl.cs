@@ -25,7 +25,10 @@ namespace Interface
             {
                 a_instance = new ArmState();
                 for (var i = 0; i < NO_JOINTS; ++i)
+                {
                     a_instance[i] = reset_duty[i];
+                    a_instance.OnLimit[i] = false;
+                }
 
                 a_instance[CLAW_IDX] = a_instance.CLAW_OPEN;
                 a_instance.ClawState = true;
@@ -69,7 +72,10 @@ namespace Interface
         public void Home()
         {
             for (var i = 0; i < NO_JOINTS; ++i)
+            {
                 a_instance[i] = reset_duty[i];
+                a_instance.OnLimit[i] = false;
+            }
         }
 
         protected void OnPropertyChanged(string name)
@@ -127,13 +133,29 @@ namespace Interface
             }
 
          }
-
         
+        public event EventHandler OnLimitReached;
 
-        public void Update(int idx, float step)
+        public bool[] OnLimit = { false, false, false, false, false, false };
+        public bool Update(int idx, float step)
         {
-            a_instance[idx] += step;
-            a_instance[idx] = Math.Max(Math.Min(a_instance[idx], MAX_DUTY[idx]), MIN_DUTY[idx]);
+            var new_val = a_instance[idx] + step;
+            if (new_val > MAX_DUTY[idx] || new_val < MIN_DUTY[idx])
+            {
+                a_instance[idx] = Math.Max(Math.Min(new_val, MAX_DUTY[idx]), MIN_DUTY[idx]);
+                if(OnLimit[idx] == false)
+                {
+                    OnLimit[idx] = true;
+                    OnLimitReached(this, null);
+                }
+                return false;
+            }
+            else
+            {
+                OnLimit[idx] = false;
+                a_instance[idx] = new_val;
+                return true;
+            }
             //Console.WriteLine("Updating");
         }
         public void Set(int idx, float angle)

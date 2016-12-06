@@ -31,8 +31,13 @@ namespace Interface
             m_arm = ArmControl;
             m_attached = this;
             m_myo.OnPoseChanged += OnPoseChanged;
+            CurrentState.OnLimitReached += CurrentState_OnLimitReached;
         }
 
+        private void CurrentState_OnLimitReached(object sender, EventArgs e)
+        {
+            m_myo.Vibrate();
+        }
 
         virtual protected void OnPoseChanged(object sender, EventArgs e)
         {
@@ -40,6 +45,7 @@ namespace Interface
 
         public virtual void Detach()
         {
+            CurrentState.OnLimitReached -= CurrentState_OnLimitReached;
             m_myo.OnPoseChanged -= OnPoseChanged;
             m_myo = null;
             m_arm = null;

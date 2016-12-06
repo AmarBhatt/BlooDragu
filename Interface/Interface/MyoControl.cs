@@ -117,6 +117,11 @@ namespace Interface
             }
         }
 
+        public void Vibrate()
+        {
+            m_myo.Vibrate(VibrationType.Long);
+        }
+
         public Vector3F Accelerometer
         {
             get

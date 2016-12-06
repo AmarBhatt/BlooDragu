@@ -34,6 +34,7 @@ namespace Interface
                 m_myo = MyoControl.GetInstance();
 
                 var theory = new AdvancedControl();
+                theory.PropertyChanged += Theory_PropertyChanged;
                 theory.Attach(m_myo, m_arm);
 
                 this.DataContext = new
@@ -49,6 +50,24 @@ namespace Interface
                 throw;
             }
         }
+
+        private void Theory_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            int i;
+            Label[] labels = { Claw, Wrist1, Wrist2, Elbow, Shoulder, Base };
+
+            for(i = 0;i < 6; i++)
+            {
+                if (theory[i])
+                {
+                    labels[i].FontWeight = FontWeights.Bold;
+                }else
+                {
+                    labels[i].FontWeight = FontWeights.Normal;
+                }
+            }
+        }
+
         MyoControl m_myo;
         ArmControl m_arm;
         ArmState s_arm;
@@ -63,10 +82,6 @@ namespace Interface
             
         }
 
-        private void CurrJoint_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            return;
-        }
 
         private void radioButtons_CheckedChanged(object sender, EventArgs e)
         {

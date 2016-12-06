@@ -7,18 +7,17 @@
         <GroupBox x:Name="groupBox" Header="Joint Control" HorizontalAlignment="Left" Height="240" Margin="10,52,0,0" VerticalAlignment="Top" Width="290">
             <CheckBox x:Name="Joint0" Content="Open" HorizontalAlignment="Left" Margin="90,39,0,0" VerticalAlignment="Top" IsChecked="{Binding s_arm.ClawState, Mode=TwoWay}"/>
         </GroupBox>
-        <TextBox x:Name="CurrJoint" Text="{Binding Path=theory.CurrentJoint, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" Margin="22,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="43" TextChanged="CurrJoint_TextChanged"/>
 
         <TextBox x:Name="Joint1" Text="{Binding Path=s_arm[1], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,130,0,0" />
         <TextBox x:Name="Joint2" Text="{Binding Path=s_arm[2], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,158,0,0"/>
         <TextBox x:Name="Joint3" Text="{Binding Path=s_arm[3], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,186,0,0"/>
         <TextBox x:Name="Joint4" Text="{Binding Path=s_arm[4], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,214,0,0"/>
         <TextBox x:Name="Joint5" Text="{Binding Path=s_arm[5], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="108,242,0,0"/>
-        <Label x:Name="label" Content="Wrist 1" HorizontalAlignment="Left" Margin="31,130,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.004,0.498"/>
-        <Label x:Name="label1" Content="Wrist 2" HorizontalAlignment="Left" Margin="31,161,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.167,0.432"/>
-        <Label x:Name="label2" Content="Elbow" HorizontalAlignment="Left" Margin="41,191,0,0" VerticalAlignment="Top" RenderTransformOrigin="0,-0.673"/>
-        <Label x:Name="label3" Content="Shoulder" HorizontalAlignment="Left" Margin="31,214,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="label4" Content="Claw" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="41,104,0,0"/>
+        <Label x:Name="Wrist1" Content="Wrist 1" HorizontalAlignment="Left" Margin="31,130,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.004,0.498" />
+        <Label x:Name="Wrist2" Content="Wrist 2" HorizontalAlignment="Left" Margin="31,161,0,0" VerticalAlignment="Top" RenderTransformOrigin="-0.167,0.432"/>
+        <Label x:Name="Elbow" Content="Elbow" HorizontalAlignment="Left" Margin="41,191,0,0" VerticalAlignment="Top" RenderTransformOrigin="0,-0.673"/>
+        <Label x:Name="Shoulder" Content="Shoulder" HorizontalAlignment="Left" Margin="31,214,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="Claw" Content="Claw" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="41,104,0,0"/>
         <TextBox x:Name="textBox_Copy1" Text="{Binding Path=s_arm.MIN_DUTY[2], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,158,0,0"/>
         <TextBox x:Name="textBox_Copy2" Text="{Binding Path=s_arm.MIN_DUTY[5], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,242,0,0"/>
         <TextBox x:Name="textBox_Copy3" Text="{Binding Path=s_arm.MIN_DUTY[0], Mode=TwoWay}" HorizontalAlignment="Left" Height="23" TextWrapping="Wrap" VerticalAlignment="Top" Width="45" Margin="177,102,0,0"/>
@@ -41,7 +40,7 @@
         <Label x:Name="label8_Copy2" Content="Velocity&#xD;&#xA;Limit:" HorizontalAlignment="Left" Margin="324,169,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="textBox_Copy20" Text="{Binding Path=theory.MaxVelocity, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" Margin="403,186,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="51"/>
         <CheckBox x:Name="checkBox" Content="Unlocked" HorizontalAlignment="Left" Margin="403,73,0,0" VerticalAlignment="Top" IsChecked="{Binding Path=theory.LockState, Mode=TwoWay}"/>
-        <Label x:Name="label3_Copy" Content="Base" HorizontalAlignment="Left" Margin="31,242,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="Base" Content="Base" HorizontalAlignment="Left" Margin="31,242,0,0" VerticalAlignment="Top"/>
         <Button x:Name="button" Content="Home" HorizontalAlignment="Left" Margin="369,263,0,0" VerticalAlignment="Top" Width="75" Click="goHome"/>
         <GroupBox x:Name="groupBox1" Header="Speed" HorizontalAlignment="Left" Height="40" Margin="305,218,0,0" VerticalAlignment="Top" Width="180">
             <Grid Margin="2,0,-2,-0.333">
@@ -55,6 +54,7 @@
                 <RadioButton x:Name="radioButton2" Tag="2" Grid.Column="1" Content="Fast" Margin="68,0,-4,0" Grid.ColumnSpan="2" />
             </Grid>
         </GroupBox>
+        <TextBox x:Name="textBox" Text="{Binding Path=theory.JointState, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" Margin="68,297,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
 
 
 

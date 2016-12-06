@@ -236,6 +236,18 @@ namespace Interface
         public float AccelerationScale { get; set; }
         public float StepSize { get; set; }
 
+        public bool[] joint_state = { true, true, false, true, true, true };
+
+        public bool this[int idx]
+        {
+            get { return joint_state[idx]; }
+            set
+            {
+                joint_state[idx] = value;
+                OnPropertyChanged("JointState");
+            }
+        }
+
 
         public int SecondJoint = 1;
         private DateTime LastJointChange = DateTime.UtcNow;
@@ -247,9 +259,18 @@ namespace Interface
             {
                 LastJointChange = DateTime.UtcNow;
                 if (SecondJoint == 1)
+                {
                     SecondJoint = 2;
+                    this[1] = false;
+                    this[2] = true;
+                }
+
                 else
+                {
                     SecondJoint = 1;
+                    this[1] = true;
+                    this[2] = false;
+                }
             }
         }
 

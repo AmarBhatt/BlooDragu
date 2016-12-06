@@ -232,9 +232,46 @@ namespace Interface
             AccelerationScale = 0.0005f;
             StepSize = 1.0f;
         }
-        public float MaxVelocity { get; set; }
-        public float AccelerationScale { get; set; }
-        public float StepSize { get; set; }
+        private float _maxVelocity;
+        public float MaxVelocity
+        {
+            get { return _maxVelocity; }
+            set
+            {
+                if (_maxVelocity != value)
+                {
+                    _maxVelocity = value;
+                    OnPropertyChanged("MaxVelocity");
+                }
+            }
+        }
+        private float _accScale;
+        public float AccelerationScale
+        {
+            get { return _accScale; }
+            set
+            {
+                if (_accScale != value)
+                {
+                    _accScale = value;
+                    OnPropertyChanged("AccelerationScale");
+                }
+            }
+        }
+
+        private float _stepSize;
+        public float StepSize
+        {
+            get { return _stepSize; }
+            set
+            {
+                if (_stepSize != value)
+                {
+                    _stepSize = value;
+                    OnPropertyChanged("StepSize");
+                }
+            }
+        }
 
         public bool[] joint_state = { true, true, false, true, true, true };
 
@@ -255,7 +292,7 @@ namespace Interface
         {
             base.OnPoseChanged(sender, e);
 
-            if(m_myo.Gesture == 2 && DateTime.UtcNow.Subtract(LastJointChange) > TimeSpan.FromSeconds(2))
+            if (m_myo.Gesture == 2 && DateTime.UtcNow.Subtract(LastJointChange) > TimeSpan.FromSeconds(2))
             {
                 LastJointChange = DateTime.UtcNow;
                 if (SecondJoint == 1)

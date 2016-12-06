@@ -27,7 +27,6 @@ namespace Interface
                 for (var i = 0; i < NO_JOINTS; ++i)
                 {
                     a_instance[i] = reset_duty[i];
-                    a_instance.OnLimit[i] = false;
                 }
 
                 a_instance[CLAW_IDX] = a_instance.CLAW_OPEN;
@@ -89,7 +88,7 @@ namespace Interface
         }
 
         public static readonly float[] reset_duty = { 12.0f, 8.0f, 7.0f, 7.0f, 7.0f, 7.0f};
-        public float[] max_duty = { 12.0f, 12.0f , 12.0f , 12.0f , 8.0f , 8.0f};
+        public float[] max_duty = { 12.0f, 12.0f , 12.0f , 12.0f , 8.0f , 12.0f};
 
         public float[] MAX_DUTY
         {
@@ -103,7 +102,7 @@ namespace Interface
         }
 
 
-        public float[] min_duty = { 9.0f, 5.0f, 5.0f, 7.0f, 5.0f, 3.0f };
+        public float[] min_duty = { 9.0f, 5.0f, 5.0f, 7.0f, 5.0f, 5.0f };
 
         public float[] MIN_DUTY
         {
@@ -136,7 +135,7 @@ namespace Interface
         
         public event EventHandler OnLimitReached;
 
-        public bool[] OnLimit = { false, false, false, false, false, false };
+        public bool[] OnLimit = { false, false, false, true, false, false };
         public bool Update(int idx, float step)
         {
             var new_val = a_instance[idx] + step;

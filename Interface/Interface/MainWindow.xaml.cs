@@ -33,7 +33,7 @@ namespace Interface
 
                 m_myo = MyoControl.GetInstance();
 
-                var theory = new AdvancedControl();
+                theory = new AdvancedControl();
                 theory.PropertyChanged += Theory_PropertyChanged;
                 theory.Attach(m_myo, m_arm);
 
@@ -83,25 +83,26 @@ namespace Interface
         }
 
 
-        private void radioButtons_CheckedChanged(object sender, EventArgs e)
+        private void radioButtons_CheckedChanged(object sender, RoutedEventArgs e)
         {
             RadioButton radioButton = sender as RadioButton;
-            int buttonid = (int)radioButton.Tag;
-            switch (buttonid)
+            if (theory != null)
             {
-                case 0:
-                    theory.StepSize = 0.5f;
-                    break;
-                case 1:
-                    theory.StepSize = 1;
-                    break;
-                case 2:
-                    theory.StepSize = 2;
-                    break;
-                default:
-                    break;
+                switch ((string)radioButton.Tag)
+                {
+                    case "0":
+                        theory.StepSize = 0.5f;
+                        break;
+                    case "1":
+                        theory.StepSize = 1;
+                        break;
+                    case "2":
+                        theory.StepSize = 2;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
-
     }
 }

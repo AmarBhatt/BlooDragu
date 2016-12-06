@@ -49,9 +49,9 @@
                     <ColumnDefinition/>
                     <ColumnDefinition Width="Auto" MinWidth="53.333"/>
                 </Grid.ColumnDefinitions>
-                <RadioButton x:Name="radioButton"  Tag="0" Grid.Column="0" Content="Slow" Margin="0,0,56.667,0" Grid.ColumnSpan="2" />
-                <RadioButton x:Name="radioButton1" Tag="1" Content="Normal" Margin="3,0,0.667,0" Grid.Column="1" IsChecked="True" />
-                <RadioButton x:Name="radioButton2" Tag="2" Grid.Column="1" Content="Fast" Margin="68,0,-4,0" Grid.ColumnSpan="2" />
+                <RadioButton x:Name="radioButton" Checked="radioButtons_CheckedChanged" Tag="0" Grid.Column="0" Content="Slow" Margin="0,0,56.667,0" Grid.ColumnSpan="2" />
+                <RadioButton x:Name="radioButton1" Checked="radioButtons_CheckedChanged" Tag="1" Content="Normal" Margin="3,0,0.667,0" Grid.Column="1" IsChecked="True" />
+                <RadioButton x:Name="radioButton2" Checked="radioButtons_CheckedChanged" Tag="2" Grid.Column="1" Content="Fast" Margin="68,0,-4,0" Grid.ColumnSpan="2" />
             </Grid>
         </GroupBox>
         <TextBox x:Name="textBox" Text="{Binding Path=theory.JointState, Mode=TwoWay}" HorizontalAlignment="Left" Height="23" Margin="68,297,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Visibility="Hidden"/>
